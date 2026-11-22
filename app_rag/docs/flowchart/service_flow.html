@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>전체 서비스 구조</title>
+<style>
+  :root{
+    --navy:#14213d; --navy2:#1e3a8a; --blue:#2f5bd8; --blue-soft:#e8eefc;
+    --ink:#16213a; --muted:#5b6478; --line:#d6dbe6; --bg:#f6f7fb; --card:#ffffff;
+    --orange:#b45309; --orange-soft:#fdf1e4; --green:#0f766e; --green-soft:#e3f4f1;
+    --violet:#6d28d9; --violet-soft:#efe9fd;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{width:1920px;height:1080px;background:var(--bg);font-family:"Noto Sans CJK KR","Noto Sans KR",sans-serif;color:var(--ink);position:relative;overflow:hidden}
+  .wrap{padding:44px 64px 0 64px}
+  .eyebrow{color:var(--blue);font-weight:700;font-size:22px;letter-spacing:.2px}
+  h1{font-size:46px;font-weight:800;margin-top:6px;letter-spacing:-.5px}
+  h1 small{font-size:22px;color:var(--muted);font-weight:500;margin-left:14px;letter-spacing:0}
+  .main{display:grid;grid-template-columns:1fr 330px;gap:24px;margin-top:22px}
+  .lanes{display:flex;flex-direction:column;gap:30px}
+  .lane{display:grid;grid-template-columns:150px 1fr;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .lane-h{padding:16px 16px;display:flex;flex-direction:column;justify-content:center;gap:6px;color:#fff}
+  .lane-h .n{font-size:15px;font-weight:700;opacity:.75}
+  .lane-h .t{font-size:22px;font-weight:800;line-height:1.25}
+  .lane-h .api{font-family:"DejaVu Sans Mono",monospace;font-size:12.5px;opacity:.85;line-height:1.35}
+  .l1 .lane-h{background:#3b5bab}
+  .l2 .lane-h{background:var(--navy)}
+  .l3 .lane-h{background:var(--green)}
+  .l4 .lane-h{background:var(--violet)}
+  .flow{display:flex;align-items:center;padding:14px 16px;gap:0}
+  .box{flex:1 1 0;min-width:0;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;position:relative}
+  .box .bt{font-size:18.5px;font-weight:800;line-height:1.2}
+  .box .bd{font-size:14px;color:var(--muted);margin-top:4px;line-height:1.35}
+  .box .f{font-family:"DejaVu Sans Mono",monospace;font-size:11.5px;color:var(--blue);margin-top:6px}
+  .arr{flex:0 0 26px;text-align:center;color:#94a3c4;font-size:22px;font-weight:700}
+  .warn{border-color:#f3c99a;background:var(--orange-soft)}
+  .warn .bt{color:var(--orange)}
+  .sec{border-color:#b9c8f2;background:var(--blue-soft)}
+  .loop{flex:4.3 1 0;display:flex;align-items:center;border:2px dashed #8aa2e6;border-radius:14px;padding:22px 8px 8px 8px;position:relative;background:#f8faff}
+  .loop-tag{position:absolute;top:-1px;left:12px;transform:translateY(-55%);background:var(--blue);color:#fff;font-size:13.5px;font-weight:700;padding:3px 10px;border-radius:999px}
+  .loop .box .bt{font-size:17px}
+  .llm{background:var(--navy);border-color:var(--navy)}
+  .llm .bt{color:#fff}.llm .bd{color:#c8d3ee}.llm .f{color:#9db7ff}
+  .out{border-color:#9fd6cd;background:var(--green-soft)}
+  .out .bt{color:var(--green)}
+  .adm{border-color:#cdbcf6}
+  .adm.key{background:var(--violet-soft)}
+  .adm.key .bt{color:var(--violet)}
+  .split3{flex:2.2 1 0;display:flex;flex-direction:column;gap:6px}
+  .split3 .box{padding:7px 12px}
+  .split3 .bt{font-size:16.5px}
+  .side{display:flex;flex-direction:column;gap:14px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+  .panel h3{font-size:19px;font-weight:800;margin-bottom:10px}
+  .ds{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid #edf0f6}
+  .ds:first-of-type{border-top:none;padding-top:0}
+  .ds .ic{flex:0 0 34px;height:34px;border-radius:9px;background:var(--blue-soft);color:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px}
+  .ds .tt{font-size:15.5px;font-weight:700;line-height:1.25}
+  .ds .dd{font-size:12.5px;color:var(--muted);line-height:1.35;margin-top:2px}
+  .ds .ff{font-family:"DejaVu Sans Mono",monospace;font-size:11px;color:var(--blue);margin-top:2px}
+  .infra{background:var(--navy);color:#fff;border:none}
+  .infra h3{color:#fff}
+  .infra .row{display:flex;justify-content:space-between;font-size:14px;padding:5px 0;border-top:1px solid rgba(255,255,255,.12)}
+  .infra .row:first-of-type{border-top:none}
+  .infra .row b{font-weight:700}
+  .infra .row span{color:#b9c6e6;font-family:"DejaVu Sans Mono",monospace;font-size:12.5px}
+  .legend{position:absolute;left:64px;bottom:20px;display:flex;gap:22px;font-size:14px;color:var(--muted);align-items:center}
+  .legend i{display:inline-block;width:16px;height:16px;border-radius:4px;margin-right:6px;vertical-align:-3px}
+  svg#ov{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;overflow:visible}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">03 · 서비스 모델</div>
+  <h1>전체 서비스 구조 <small>GitHub app_rag 코드 기준 · FastAPI 서버 1개 + 로컬 EXAONE</small></h1>
+
+  <div class="main">
+    <div class="lanes">
+
+      <!-- Lane 1 -->
+      <div class="lane l1" id="lane1">
+        <div class="lane-h"><div class="n">①</div><div class="t">업로드 ·<br>전처리</div><div class="api">POST<br>/api/extract</div></div>
+        <div class="flow">
+          <div class="box"><div class="bt">로그인</div><div class="bd">만 19세 이상 가입<br>JWT · bcrypt</div><div class="f">auth.py</div></div>
+          <div class="arr">→</div>
+          <div class="box"><div class="bt">파일 업로드</div><div class="bd">PDF · HWP<br>HWPX · TXT</div><div class="f">static/app.js</div></div>
+          <div class="arr">→</div>
+          <div class="box warn"><div class="bt">텍스트 추출</div><div class="bd">스캔 PDF 감지 시<br>안내 후 중단</div><div class="f">extract.py</div></div>
+          <div class="arr">→</div>
+          <div class="box sec"><div class="bt">원본 암호화 저장</div><div class="bd">AES-256-GCM<br>24시간 뒤 자동 삭제</div><div class="f">crypto_store.py · db.py</div></div>
+          <div class="arr">→</div>
+          <div class="box sec"><div class="bt">개인정보 마스킹</div><div class="bd">이름·연락처<br>주민번호·계좌</div><div class="f">pii.py</div></div>
+          <div class="arr">→</div>
+          <div class="box"><div class="bt">계약 유형 추정</div><div class="bd">근로 · 임대차<br>· 금전차용</div><div class="f">domain.py</div></div>
+        </div>
+      </div>
+
+      <!-- Lane 2 -->
+      <div class="lane l2" id="lane2">
+        <div class="lane-h"><div class="n">②</div><div class="t">조항별<br>분석</div><div class="api">POST<br>/api/analyze<br>(SSE 스트림)</div></div>
+        <div class="flow">
+          <div class="box" style="flex:.95 1 0"><div class="bt">조항 분리</div><div class="bd">조 제목 부착<br>서식 문구 제외</div><div class="f">split.py</div></div>
+          <div class="arr">→</div>
+          <div class="box" style="flex:.95 1 0"><div class="bt">사실표</div><div class="bd">임금·이자율<br>계약일 (정규식)</div><div class="f">facts.py</div></div>
+          <div class="arr">→</div>
+          <div class="loop">
+            <div class="loop-tag">조항마다 반복</div>
+            <div class="box"><div class="bt">하이브리드 검색</div><div class="bd">BM25 + bge-m3<br>RRF 결합 · 상위 3</div><div class="f">retrieve.py</div></div>
+            <div class="arr">→</div>
+            <div class="box" id="cardsel"><div class="bt">판정 기준표</div><div class="bd">조항 유형별 카드<br>계약일 버전 선택</div><div class="f">criteria.py</div></div>
+            <div class="arr">→</div>
+            <div class="box llm"><div class="bt">EXAONE 4.0 32B</div><div class="bd">JSON 판정<br>4비트 · 로컬 GPU</div><div class="f">llm_router.py</div></div>
+            <div class="arr">→</div>
+            <div class="box warn"><div class="bt">규칙 검증</div><div class="bd">최저임금·이자율 계산<br>인용·근거 ID 대조</div><div class="f">verify.py</div></div>
+          </div>
+          <div class="arr">→</div>
+          <div class="box" style="flex:1.05 1 0"><div class="bt">점수 · 리포트</div><div class="bd">0~100점 · 3등급<br>필수 항목 누락</div><div class="f">report.py · score.py</div></div>
+        </div>
+      </div>
+
+      <!-- Lane 3 -->
+      <div class="lane l3" id="lane3">
+        <div class="lane-h"><div class="n">③</div><div class="t">결과 ·<br>상담</div><div class="api">/api/chat<br>/api/reviews</div></div>
+        <div class="flow">
+          <div class="box out"><div class="bt">실시간 조항 표시</div><div class="bd">분석되는 순서대로<br>판정 카드 스트리밍</div><div class="f">server.py (SSE)</div></div>
+          <div class="arr">→</div>
+          <div class="box out"><div class="bt">검토 기록 저장</div><div class="bd">마스킹 텍스트와<br>리포트만 저장</div><div class="f">db.insert_review</div></div>
+          <div class="arr">→</div>
+          <div class="split3">
+            <div class="box"><div class="bt">결과 화면 · 원문 위치 표시</div><div class="bd">위험 조항 · 근거 조문 · 수정 문구 (/api/locate)</div></div>
+            <div class="box"><div class="bt">AI 상담</div><div class="bd">조항 인용 답변 · EXAONE · 법률 자문 아님 고지</div></div>
+            <div class="box"><div class="bt">검토 기록 다시 보기</div><div class="bd">지난 리포트 열람</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lane 4 -->
+      <div class="lane l4" id="lane4">
+        <div class="lane-h"><div class="n">④</div><div class="t">법령 개정<br>추적</div><div class="api">관리자 화면<br>24시간 주기</div></div>
+        <div class="flow">
+          <div class="box adm"><div class="bt">감지</div><div class="bd">국가법령정보 API<br>법령 11개</div><div class="f">lawwatch/check.py</div></div>
+          <div class="arr">→</div>
+          <div class="box adm"><div class="bt">비교</div><div class="bd">개정 전후<br>조문 비교</div><div class="f">lawwatch/diff.py</div></div>
+          <div class="arr">→</div>
+          <div class="box adm"><div class="bt">수정 초안</div><div class="bd">영향받는 카드 찾고<br>EXAONE이 수정안</div><div class="f">lawwatch/propose.py</div></div>
+          <div class="arr">→</div>
+          <div class="box adm key"><div class="bt">관리자 승인</div><div class="bd">부칙 보고<br>적용 범위 결정</div><div class="f">lawwatch/apply.py</div></div>
+          <div class="arr">→</div>
+          <div class="box adm key" id="newver"><div class="bt">새 기준표 버전</div><div class="bd">시행일 기준 활성화<br>되돌리기 가능</div><div class="f">lawwatch/select.py</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Side -->
+    <div class="side">
+      <div class="panel">
+        <h3>데이터 저장소</h3>
+        <div class="ds"><div class="ic">법</div><div><div class="tt">법령 자료 104건</div><div class="dd">법 조문 98 · 판례 4 · 고시 2<br>bge-m3 임베딩 미리 계산</div><div class="ff">corpus/records.json</div></div></div>
+        <div class="ds"><div class="ic">표</div><div><div class="tt">판정 기준표 44개</div><div class="dd">조항 유형별 정상·위반·확인 필요<br>버전 · 시행일 관리</div><div class="ff">criteria/*_cards.yaml</div></div></div>
+        <div class="ds"><div class="ic">규</div><div><div class="tt">숫자 규칙 · 필수 항목</div><div class="dd">연도별 최저임금, 이자 상한<br>계약 유형별 필수 기재 항목</div><div class="ff">config/ · required_items.yaml</div></div></div>
+        <div class="ds"><div class="ic">DB</div><div><div class="tt">SQLite</div><div class="dd">사용자 · 암호화 원본(TTL)<br>검토 기록(마스킹본만)</div><div class="ff">rag/db.py</div></div></div>
+      </div>
+      <div class="panel infra">
+        <h3>실행 환경</h3>
+        <div class="row"><b>웹 서버</b><span>FastAPI :8091</span></div>
+        <div class="row"><b>언어 모델</b><span>llama.cpp :8083</span></div>
+        <div class="row"><b>GPU</b><span>RTX 4090 24GB</span></div>
+        <div class="row"><b>시연 공개</b><span>cloudflared</span></div>
+        <div class="row"><b>외부 전송</b><span>계약서 없음</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="legend">
+  <span><i style="background:var(--navy)"></i>로컬 언어 모델</span>
+  <span><i style="background:var(--blue-soft);border:1px solid #b9c8f2"></i>보안 처리</span>
+  <span><i style="background:var(--orange-soft);border:1px solid #f3c99a"></i>코드 규칙·예외 처리</span>
+  <span><i style="background:var(--green-soft);border:1px solid #9fd6cd"></i>사용자에게 보이는 결과</span>
+  <span><i style="border:2px dashed var(--violet);background:none"></i>새 버전이 판정 기준표에 반영</span>
+</div>
+
+<svg id="ov" width="1920" height="1080" viewBox="0 0 1920 1080"></svg>
+<script>
+  function c(el){const r=el.getBoundingClientRect();return r;}
+  const ov=document.getElementById('ov');
+  const NS='http://www.w3.org/2000/svg';
+  function path(d,stroke,dash,marker){const p=document.createElementNS(NS,'path');p.setAttribute('d',d);p.setAttribute('fill','none');p.setAttribute('stroke',stroke);p.setAttribute('stroke-width','2.5');if(dash)p.setAttribute('stroke-dasharray',dash);p.setAttribute('marker-end','url(#'+marker+')');ov.appendChild(p);}
+  ov.innerHTML='<defs>'+
+    '<marker id="mv" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6d28d9"/></marker>'+
+    '<marker id="mg" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8a96b3"/></marker></defs>';
+  // lane-to-lane connectors: from right end of lane N flow to left of lane N+1 (elbow)
+  const lanes=[1,2,3].map(i=>document.getElementById('lane'+i));
+  lanes.forEach((ln,i)=>{
+    const boxes=ln.querySelectorAll('.flow > .box, .flow > .loop, .flow > .split3');
+    const last=boxes[boxes.length-1];
+    const nxt=document.getElementById('lane'+(i+2)).querySelector('.flow > .box');
+    if(i===2) return;
+    const a=c(last), b=c(nxt);
+    const x1=a.left+a.width/2, y1=a.bottom;
+    const ymid=(a.bottom+b.top)/2 + 0;
+    const x2=b.left+b.width/2, y2=b.top-2;
+    path(`M${x1},${y1} V${ymid} H${x2} V${y2}`,'#8a96b3','', 'mg');
+  });
+  // lawwatch new version -> criteria card select (dashed violet), routed along right of lanes
+  const nv=c(document.getElementById('newver')), cs=c(document.getElementById('cardsel'));
+  const laneRight=c(document.getElementById('lane2')).right;
+  const xr=laneRight-10;
+  const x0=nv.right, y0=nv.top+nv.height/2;
+  const yt=cs.top-0;
+  path(`M${x0},${y0} H${xr} V${cs.top-26} H${cs.left+cs.width/2} V${cs.top-2}`,'#6d28d9','8 6','mv');
+</script>
+</body>
+</html>
